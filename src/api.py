@@ -1,7 +1,10 @@
 from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from .caller import review_batch
+from .caller import review_batch, review_code
 from .models import CodeReview
+import json
+import asyncio
 
 app = FastAPI(title="LLM Stress-Tester")
 
@@ -29,3 +32,34 @@ async def batch_review(req: BatchRequest):
         for r in results
     ]
     return BatchResult(results=serialized, total_time_s=round(elapsed, 2))
+
+@app.post("/review/stream")
+async def stream_review(req: BatchRequest):
+    async def event_generator():
+        sem = asyncio.Semaphore(req.max_concurrent)
+        queue = asyncio.Queue()
+
+        async def worker(i, snippet):
+            async with sem:
+                try:
+                    result = await review_code(snippet)
+                except Exception as exc:
+                    result = exc
+                await queue.put((i, result))
+
+        tasks = [asyncio.create_task(worker(i, s)) for i, s in enumerate(req.snippets)]
+
+        for _ in req.snippets:
+            i, result = await queue.get()
+            payload = {
+                "index": i,
+                "result": result.model_dump() if isinstance(result, CodeReview) else {"error": str(result)},
+            }
+            yield f"data: {json.dumps(payload)}\n\n"
+
+        await asyncio.gather(*tasks)
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream"
+    )
