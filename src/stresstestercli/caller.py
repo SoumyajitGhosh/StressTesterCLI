@@ -1,11 +1,15 @@
 import asyncio
+
 from openai import AsyncOpenAI, RateLimitError
-from .models import CodeReview
+
 from .config import settings
+from .models import CodeReview
 
 client = AsyncOpenAI(api_key=settings.openai_api_key)
 
-SYSTEM = """You are a code reviewer. Reply ONLY with a JSON object matching: {"verdict": "pass"|"warn"|"fail", "score": 0-100, "issues": ["list", "of", "strings"], "suggestions": "string"}"""
+SYSTEM = """You are a code reviewer. Reply ONLY with a JSON object matching:
+{"verdict": "pass"|"warn"|"fail", "score": 0-100, "issues": ["list", "of", "strings"], "suggestions": "string"}"""
+
 
 async def review_code(snippet: str) -> CodeReview:
     resp = await client.chat.completions.create(
@@ -24,10 +28,9 @@ async def review_batch(
     snippets: list[str],
     max_concurrent: int = 5,
 ) -> list[CodeReview | Exception]:
-    
     sem = asyncio.Semaphore(max_concurrent)
-    
-    async def guarded(snippet):
+
+    async def guarded(snippet: str):
         async with sem:
             max_retries = 3
             backoff = 1.0
@@ -40,8 +43,8 @@ async def review_batch(
                     await asyncio.sleep(backoff)
                     backoff *= 2
                 except Exception as e:
-                    return e  # surface errors, don't crash
+                    return e
             return RuntimeError("Unexpected retry loop exit")
-            
+
     tasks = [guarded(s) for s in snippets]
     return await asyncio.gather(*tasks)

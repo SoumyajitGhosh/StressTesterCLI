@@ -15,5 +15,12 @@ dependencies = [
     "uvicorn[standard]>=0.46.0",
 ]
 
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
 [tool.pytest.ini_options]
 pythonpath = ["src"]
+
+[project.scripts] 
+review = "stresstestercli.cli:main"

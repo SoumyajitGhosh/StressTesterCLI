@@ -1,6 +1,6 @@
 import pytest
 from pydantic import ValidationError
-from src.models import parse_llm_json
+from src.stresstestercli.models import parse_llm_json
 
 def test_parse_llm_json_malformed():
     malformed = '{"verdict": "pass", "score": 100, "issues": ["ok"], "suggestions": "none"'  # missing closing }

@@ -3,9 +3,9 @@ import json
 import pytest
 from httpx import AsyncClient
 
-from src.api import app
+from src.stresstestercli.api import app
 
-@pytest.mark.anyio
+@pytest.mark.anycio
 async def test_stream_review_endpoint_sends_sse_events():
     payload = {"snippets": ["x=1", "y=2"], "max_concurrent": 1}
 

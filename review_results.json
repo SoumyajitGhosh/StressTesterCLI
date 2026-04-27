@@ -1,0 +1,75 @@
+[
+  {
+    "file": "src/stresstestercli/caller.py",
+    "result": {
+      "verdict": "warn",
+      "score": 75,
+      "issues": [
+        "Usage of 'gpt-4o-mini' model may not be appropriate; check for official models available.",
+        "Return type of 'review_batch' could be more explicitly defined instead of using union of CodeReview and Exception."
+      ],
+      "suggestions": "Consider using a more commonly recognized model and provide a clearer return type hint for 'review_batch'."
+    }
+  },
+  {
+    "file": "src/stresstestercli/config.py",
+    "result": {
+      "verdict": "pass",
+      "score": 95,
+      "issues": [],
+      "suggestions": "Consider adding type hints to the class methods for better clarity."
+    }
+  },
+  {
+    "file": "src/stresstestercli/models.py",
+    "result": {
+      "verdict": "warn",
+      "score": 85,
+      "issues": [
+        "Usage of deprecated method 'model_validate_json' for validation.",
+        "Regular expression in 'parse_llm_json' could lead to unexpected behavior if the raw input format is not strictly followed."
+      ],
+      "suggestions": "Consider using 'parse_raw' from Pydantic to handle JSON parsing more effectively, and revise the regex to ensure it handles edge cases properly."
+    }
+  },
+  {
+    "file": "src/stresstestercli/__init__.py",
+    "result": {
+      "verdict": "pass",
+      "score": 100,
+      "issues": [],
+      "suggestions": "Good practice to define the version of the module."
+    }
+  },
+  {
+    "file": "src/stresstestercli/api.py",
+    "result": {
+      "verdict": "warn",
+      "score": 80,
+      "issues": [
+        "Potential use of time.sleep() in an async environment with synchronous time function.",
+        "The serialization of error responses may lead to loss of traceback information.",
+        "Inconsistent error handling may affect debugging."
+      ],
+      "suggestions": "Consider using asyncio's high-resolution timer instead of time.perf_counter() and improve error handling with logging mechanisms to capture exception details."
+    }
+  },
+  {
+    "file": "src/stresstestercli/cli.py",
+    "result": {
+      "verdict": "pass",
+      "score": 90,
+      "issues": [],
+      "suggestions": "Consider adding type hints for function parameters and return types for better clarity and type checking."
+    }
+  },
+  {
+    "file": "src/stresstestercli/main.py",
+    "result": {
+      "verdict": "pass",
+      "score": 95,
+      "issues": [],
+      "suggestions": "Consider adding documentation strings for better maintainability."
+    }
+  }
+]

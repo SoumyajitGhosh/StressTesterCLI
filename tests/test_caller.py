@@ -1,7 +1,7 @@
 import asyncio
 
 import pytest
-from src.caller import review_batch
+from src.stresstestercli.caller import review_batch
 
 class DummyError(Exception):
     pass
